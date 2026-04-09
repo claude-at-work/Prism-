@@ -205,6 +205,19 @@ def review(ctx, link_id, action, note):
 
 @main.command()
 @click.pass_context
+def seed(ctx):
+    """Seed the atlas with the starter library."""
+    from prism.seed import seed_atlas
+    c = _get_ctx(ctx)
+    seed_atlas(c.db, c.encoder)
+    instances = c.db.list_instances()
+    patterns = c.db.list_patterns()
+    click.echo(f"Seeded {len(patterns)} patterns and {len(instances)} instances.")
+    c.db.close()
+
+
+@main.command()
+@click.pass_context
 def pressures(ctx):
     """Apply three-pressure dynamics to the graph."""
     c = _get_ctx(ctx)
