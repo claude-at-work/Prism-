@@ -68,7 +68,20 @@ class PrismDB:
             USING vec0(id TEXT PRIMARY KEY, embedding float[64])
         """)
         self.conn.commit()
-        self._vec_dim = 64
+        self._vec_dim = self._read_vec_dim()
+
+    def _read_vec_dim(self) -> int:
+        """Read the actual embedding dimension from a stored row, falling back to 64."""
+        try:
+            row = self.conn.execute(
+                "SELECT embedding FROM instance_embeddings LIMIT 1"
+            ).fetchone()
+            if row and row[0]:
+                n = len(row[0]) // 4
+                return n if n > 0 else 64
+        except Exception:
+            pass
+        return 64
 
     def _ensure_vec_dim(self, dim: int):
         if dim != self._vec_dim:
