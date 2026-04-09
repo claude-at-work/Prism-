@@ -6,8 +6,8 @@ from prism.models import Instance, Link, LinkState, LinkType
 
 
 class ResonanceEngine:
-    PLAUSIBLE_THRESHOLD = 0.5  # cosine distance below this = plausible
-    PROBABLE_THRESHOLD = 0.25  # cosine distance below this = probable candidate
+    PLAUSIBLE_THRESHOLD = 1.2  # L2 distance on unit vectors: 0=identical, sqrt(2)≈1.41=orthogonal, 2=opposite
+    PROBABLE_THRESHOLD = 0.8  # tighter threshold for probable
     DECAY_ROUNDS = 3  # rounds without corroboration before weakening
     MIN_CLUSTER_SIZE = 3  # minimum instances to propose emergent pattern
 
@@ -79,7 +79,7 @@ class ResonanceEngine:
                     instance.structural_signature,
                     neighbor.structural_signature,
                 )
-                confidence = 1.0 - distance
+                confidence = max(0.0, 1.0 - (distance / self.PLAUSIBLE_THRESHOLD))  # normalize to 0-1 range
                 link = Link(
                     id=str(uuid.uuid4())[:12],
                     source_id=instance.id,

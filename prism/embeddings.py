@@ -15,18 +15,24 @@ class Embedder:
         self._vectorizer.fit(texts)
         self._fitted = True
 
+    def _normalize(self, vec: np.ndarray) -> np.ndarray:
+        norm = np.linalg.norm(vec)
+        if norm == 0:
+            return vec
+        return vec / norm
+
     def embed(self, signature: dict[str, str]) -> list[float]:
         if not self._fitted:
             raise RuntimeError("Embedder must be fit before embedding")
         text = self._serialize_signature(signature)
         vec = self._vectorizer.transform([text]).toarray()[0]
-        return vec.tolist()
+        return self._normalize(vec).tolist()
 
     def embed_text(self, text: str) -> list[float]:
         if not self._fitted:
             raise RuntimeError("Embedder must be fit before embedding")
         vec = self._vectorizer.transform([text]).toarray()[0]
-        return vec.tolist()
+        return self._normalize(vec).tolist()
 
     @staticmethod
     def cosine_distance(a: list[float], b: list[float]) -> float:
