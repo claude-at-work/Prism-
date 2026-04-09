@@ -1,0 +1,21 @@
+[project]
+name = "prism"
+version = "0.1.0"
+description = "Pattern Atlas with Resonance Discovery"
+requires-python = ">=3.13"
+dependencies = [
+    "click>=8.0",
+    "sqlite-vec>=0.1.9",
+    "scikit-learn>=1.8",
+    "numpy>=2.0",
+]
+
+[project.scripts]
+prism = "prism.cli:main"
+
+[build-system]
+requires = ["setuptools>=75.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
